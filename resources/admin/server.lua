@@ -5,9 +5,8 @@
 -- Admin Menu Command
 RegisterCommand("admin", function(source, args, rawCommand)
     local src = source
-    local player = GetPlayerPed(src)
 
-    -- Check if the player is an admin (you can customize the admin check)
+    -- Admin ellenőrzés
     if IsPlayerAdmin(src) then
         TriggerClientEvent('admin:openMenu', src)
     else

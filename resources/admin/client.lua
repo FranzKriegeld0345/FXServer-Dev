@@ -7,7 +7,19 @@ local targetPlayer = nil
 
 RegisterNetEvent('admin:openMenu')
 AddEventHandler('admin:openMenu', function()
-    -- Nyisd meg az admin menüt (UI-t itt meg kell valósítani, pl. NUI segítségével)
+    -- NUI fókusz beállítása
+    SetNuiFocus(true, true)
+
+    -- Üzenet küldése a NUI-nak (admin_menu.html)
+    SendNUIMessage({
+        action = "openMenu"
+    })
+end)
+
+-- NUI Callback a menü bezárásához
+RegisterNUICallback('closeMenu', function(data, cb)
+    SetNuiFocus(false, false)
+    cb('ok')
 end)
 
 RegisterNetEvent('admin:spectate')
