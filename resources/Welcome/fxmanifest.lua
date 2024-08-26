@@ -3,21 +3,21 @@
 fx_version 'cerulean'
 game 'gta5'
 
-author 'FK-Development'
-description 'Egyedi és hasznos FiveM scriptek'
-version 'V 0.1'
-
--- Client Scripts
-client_scripts {
-    'client.lua'
-}
+author 'YourName'
+description 'Fejlesztői és Adminisztrátori Funkciók'
+version '1.0.0'
 
 -- Server Scripts
 server_scripts {
-    'server.lua'
+    'server.lua' -- Admin és fejlesztői parancsok
 }
 
--- Server Event Trigger (optional, ha külön használod a changeWeather eseményt)
---server_exports {
---    'changeWeather'
---}
+-- Admin jogok kezelése
+server_only 'yes'
+
+-- Admin jogok engedélyezése az 'server.cfg'-ben
+-- add_ace group.admin command.tp allow
+-- add_ace group.admin command.spawncar allow
+-- add_ace group.admin command.kick allow
+-- add_ace group.admin command.debug allow
+-- add_ace group.admin command.checkvehicle allow

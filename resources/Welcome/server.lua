@@ -1,58 +1,136 @@
--- Welcome Message Script
-AddEventHandler('playerConnecting', function(playerName, setKickReason, deferrals)
-    local playerId = source
-    TriggerClientEvent('chat:addMessage', playerId, {
-        color = { 255, 0, 0},
-        multiline = true,
-        args = {"Server", "Üdvözlünk, " .. playerName .. "! Kellemes játékot kívánunk!"}
-    })
+-- Admin Management Script
+
+RegisterCommand('tp', function(source, args, rawCommand)
+    if IsPlayerAceAllowed(source, "command.tp") then
+        local target = tonumber(args[1])
+        local x, y, z = tonumber(args[2]), tonumber(args[3]), tonumber(args[4])
+        if target and x and y and z then
+            SetEntityCoords(GetPlayerPed(target), x, y, z, false, false, false, true)
+            TriggerClientEvent('chat:addMessage', source, {
+                color = { 0, 255, 0 },
+                multiline = true,
+                args = {"Admin", "Játékos teleportálva!"}
+            })
+        else
+            TriggerClientEvent('chat:addMessage', source, {
+                color = { 255, 0, 0 },
+                multiline = true,
+                args = {"Admin", "Használat: /tp [playerID] [x] [y] [z]"}
+            })
+        end
+    else
+        TriggerClientEvent('chat:addMessage', source, {
+            color = { 255, 0, 0 },
+            multiline = true,
+            args = {"Admin", "Nincs jogosultságod ehhez a parancshoz!"}
+        })
+    end
 end)
 
--- Simple Bank Robbery Script
-local banks = {
-    {name = "Fleeca Bank", x = 146.92, y = -1044.11, z = 29.37}
-}
-
-local isRobbing = false
-local robberyTimer = 60
-
-RegisterCommand('startrobbery', function(source, args, rawCommand)
-    local player = source
-    local playerPed = GetPlayerPed(player)
-    local playerCoords = GetEntityCoords(playerPed)
-    
-    for _, bank in pairs(banks) do
-        local distance = GetDistanceBetweenCoords(playerCoords, bank.x, bank.y, bank.z, true)
+RegisterCommand('spawncar', function(source, args, rawCommand)
+    if IsPlayerAceAllowed(source, "command.spawncar") then
+        local vehicleName = args[1] or "adder"
+        local playerPed = GetPlayerPed(source)
+        local coords = GetEntityCoords(playerPed)
         
-        if distance < 5.0 and not isRobbing then
-            isRobbing = true
-            TriggerClientEvent('chat:addMessage', -1, {
-                color = { 255, 0, 0},
-                multiline = true,
-                args = {"Bankrablás", "A rablás elindult a " .. bank.name .. " bankban!"}
-            })
-            
-            Citizen.CreateThread(function()
-                while robberyTimer > 0 do
-                    Citizen.Wait(1000)
-                    robberyTimer = robberyTimer - 1
-                    TriggerClientEvent('chat:addMessage', player, {
-                        color = { 255, 0, 0},
-                        multiline = true,
-                        args = {"Bankrablás", "Hátralévő idő: " .. robberyTimer .. " másodperc"}
-                    })
-                end
-                
-                isRobbing = false
-                robberyTimer = 60
-                TriggerClientEvent('chat:addMessage', -1, {
-                    color = { 0, 255, 0},
-                    multiline = true,
-                    args = {"Bankrablás", "A rablás véget ért!"}
-                })
-            end)
-            
-            break
+        RequestModel(vehicleName)
+        while not HasModelLoaded(vehicleName) do
+            Citizen.Wait(500)
         end
+        
+        local vehicle = CreateVehicle(vehicleName, coords.x, coords.y, coords.z, GetEntityHeading(playerPed), true, false)
+        SetPedIntoVehicle(playerPed, vehicle, -1)
+        TriggerClientEvent('chat:addMessage', source, {
+            color = { 0, 255, 0 },
+            multiline = true,
+            args = {"Admin", "Jármű spawnolva: " .. vehicleName}
+        })
+    else
+        TriggerClientEvent('chat:addMessage', source, {
+            color = { 255, 0, 0 },
+            multiline = true,
+            args = {"Admin", "Nincs jogosultságod ehhez a parancshoz!"}
+        })
+    end
+end)
+
+RegisterCommand('kick', function(source, args, rawCommand)
+    if IsPlayerAceAllowed(source, "command.kick") then
+        local target = tonumber(args[1])
+        local reason = table.concat(args, " ", 2)
+        if target then
+            DropPlayer(target, reason or "Ki lettél rúgva!")
+            TriggerClientEvent('chat:addMessage', -1, {
+                color = { 255, 0, 0 },
+                multiline = true,
+                args = {"Admin", "Játékos kickelve lett!"}
+            })
+        else
+            TriggerClientEvent('chat:addMessage', source, {
+                color = { 255, 0, 0 },
+                multiline = true,
+                args = {"Admin", "Használat: /kick [playerID] [reason]"}
+            })
+        end
+    else
+        TriggerClientEvent('chat:addMessage', source, {
+            color = { 255, 0, 0 },
+            multiline = true,
+            args = {"Admin", "Nincs jogosultságod ehhez a parancshoz!"}
+        })
+    end
+end)
+
+-- Developer Tools Script
+
+RegisterCommand('debug', function(source, args, rawCommand)
+    if IsPlayerAceAllowed(source, "command.debug") then
+        local playerPed = GetPlayerPed(source)
+        local coords = GetEntityCoords(playerPed)
+        local heading = GetEntityHeading(playerPed)
+        local health = GetEntityHealth(playerPed)
+        
+        TriggerClientEvent('chat:addMessage', source, {
+            color = { 0, 255, 255 },
+            multiline = true,
+            args = {"Debug", "Pozíció: " .. coords .. " Irány: " .. heading .. " Élet: " .. health}
+        })
+    else
+        TriggerClientEvent('chat:addMessage', source, {
+            color = { 255, 0, 0 },
+            multiline = true,
+            args = {"Debug", "Nincs jogosultságod ehhez a parancshoz!"}
+        })
+    end
+end)
+
+RegisterCommand('checkvehicle', function(source, args, rawCommand)
+    if IsPlayerAceAllowed(source, "command.checkvehicle") then
+        local playerPed = GetPlayerPed(source)
+        local vehicle = GetVehiclePedIsIn(playerPed, false)
+        
+        if vehicle ~= 0 then
+            local health = GetVehicleEngineHealth(vehicle)
+            local fuel = GetVehicleFuelLevel(vehicle)
+            local plate = GetVehicleNumberPlateText(vehicle)
+            
+            TriggerClientEvent('chat:addMessage', source, {
+                color = { 0, 255, 255 },
+                multiline = true,
+                args = {"Jármű", "Rendszám: " .. plate .. " Motor állapot: " .. health .. " Üzemanyag: " .. fuel}
+            })
+        else
+            TriggerClientEvent('chat:addMessage', source, {
+                color = { 255, 0, 0 },
+                multiline = true,
+                args = {"Jármű", "Nem vagy egy járműben!"}
+            })
+        end
+    else
+        TriggerClientEvent('chat:addMessage', source, {
+            color = { 255, 0, 0 },
+            multiline = true,
+            args = {"Jármű", "Nincs jogosultságod ehhez a parancshoz!"}
+        })
     end
 end)
