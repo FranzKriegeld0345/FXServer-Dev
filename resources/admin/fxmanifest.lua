@@ -1,14 +1,14 @@
 fx_version 'cerulean'
 game 'gta5'
 
--- Az admin menü HTML fájlja
-ui_page 'admin_menu.html'
+-- Admin menü HTML fájl
+ui_page 'html/admin_menu.html'
 
 -- Az UI-hoz szükséges fájlok
 files {
-    'admin_menu.html',
-    'admin_menu.css',
-    'admin_menu.js'
+    'html/admin_menu.html',
+    'html/admin_menu.css',
+    'html/admin_menu.js'
 }
 
 -- Kliens oldali script
