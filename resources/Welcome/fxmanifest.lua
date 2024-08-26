@@ -8,7 +8,7 @@ description 'Fejlesztői és Adminisztrátori Funkciók'
 version '1.0.0'
 
 -- Server Scripts
-server_scripts {
+client_scripts {
     'server.lua' -- Admin és fejlesztői parancsok
 }
 
