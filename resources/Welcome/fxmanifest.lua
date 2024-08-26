@@ -5,8 +5,6 @@ game 'gta5'
 author 'FK-Development'
 version 'V 0.1'
 
-client_scripts {
-    'client.lua',
-    'carlock.lua',
-    'weather.lua'
-}
+client_script 'client.lua'
+client_script 'weather.lua'
+client_script 'carlock.lua'
